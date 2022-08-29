@@ -23,3 +23,7 @@ export type InitiatePayParams = CommonParams & {
 export type PullBackFromEscrowParams = CommonParams & {
     refundWallet: PublicKey
 }
+
+export type CompleteGrantParams = CommonParams & {
+    walletToDepositTo: PublicKey
+}

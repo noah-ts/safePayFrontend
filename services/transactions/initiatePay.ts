@@ -17,21 +17,27 @@ export const getInitiatePayTransaction = async ({
     userReceiving,
     mintOfTokenBeingSent
 }: InitiatePayParams) => {
-    const program = getAnchorProgram(connection, wallet)
-    return await program.methods
-        .initiate(new BN(amount), applicationBump, escrowWalletBump)
-        .accounts({
-            walletToWithdrawFrom,
+    try {
+        const program = getAnchorProgram(connection, wallet)
+        const transaction = await program.methods
+            .initiate(new BN(amount), applicationBump, escrowWalletBump)
+            .accounts({
+                walletToWithdrawFrom,
 
-            applicationState,
-            escrowWalletState,
-            userSending,
-            userReceiving,
-            mintOfTokenBeingSent,
+                applicationState,
+                escrowWalletState,
+                userSending,
+                userReceiving,
+                mintOfTokenBeingSent,
 
-            systemProgram: SystemProgram.programId,
-            rent: SYSVAR_RENT_PUBKEY,
-            tokenProgram: TOKEN_PROGRAM_ID
-        })
-        .transaction()
+                systemProgram: SystemProgram.programId,
+                rent: SYSVAR_RENT_PUBKEY,
+                tokenProgram: TOKEN_PROGRAM_ID
+            })
+            .transaction()
+
+        return { program, transaction }
+    } catch (error) {
+        console.error('Error getting initiate pay transaction: ', error)
+    }
 }
