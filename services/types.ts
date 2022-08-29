@@ -1,7 +1,8 @@
-import { Wallet } from '@project-serum/anchor'
+import { BN, Wallet } from '@project-serum/anchor'
 import { Connection, PublicKey } from '@solana/web3.js'
 
 type CommonParams = {
+    id: BN
     connection: Connection
     wallet: Wallet
 
@@ -13,7 +14,7 @@ type CommonParams = {
 }
 
 export type InitiatePayParams = CommonParams & {
-    amount: Number
+    amount: number
     applicationBump: number
     escrowWalletBump: number
 

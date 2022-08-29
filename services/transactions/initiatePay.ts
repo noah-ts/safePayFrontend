@@ -1,10 +1,11 @@
 import { BN } from '@project-serum/anchor';
 import { TOKEN_PROGRAM_ID } from '@project-serum/anchor/dist/cjs/utils/token';
-import { SystemProgram, SYSVAR_RENT_PUBKEY } from '@solana/web3.js';
+import { LAMPORTS_PER_SOL, SystemProgram, SYSVAR_RENT_PUBKEY } from '@solana/web3.js';
 import { InitiatePayParams } from '../types';
 import { getAnchorProgram } from '../utils';
 
 export const getInitiatePayTransaction = async ({
+    id,
     connection,
     wallet,
     amount,
@@ -20,7 +21,7 @@ export const getInitiatePayTransaction = async ({
     try {
         const program = getAnchorProgram(connection, wallet)
         const transaction = await program.methods
-            .initiate(new BN(amount), applicationBump, escrowWalletBump)
+            .initiate(new BN(amount * LAMPORTS_PER_SOL), applicationBump, escrowWalletBump, id)
             .accounts({
                 walletToWithdrawFrom,
 

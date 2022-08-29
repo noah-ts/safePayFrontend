@@ -4,13 +4,14 @@ import { PublicKey, Transaction } from '@solana/web3.js'
 import { FormEvent, useMemo, useState } from 'react'
 import { getCompleteGrantTransaction } from '../services/transactions/completeGrant'
 import { getPullBackFromEscrowTransaction } from '../services/transactions/pullBackFromEscrow'
-import { customGetOrCreateAssociatedTokenAccount, getAnchorProgram, getApplicationStatePda, getPdaParams } from '../services/utils'
+import { customGetOrCreateAssociatedTokenAccount, getAnchorProgram, getApplicationStatePda } from '../services/utils'
 
 const State = () => {
     const { connection } = useConnection()
     const wallet = useWallet()
 
     const [safePayState, setSafePayState] = useState<{
+        id: BN,
         amountTokens: BN,
         applicationStateBump: number,
         escrowWalletStateBump: number,
@@ -24,6 +25,7 @@ const State = () => {
     const [signature, setSignature] = useState('')
 
     const [inputValues, setInputValues] = useState({
+        id: '',
         mintOfTokenBeingSent: '',
         userSending: '',
         userReceiving: ''
@@ -46,7 +48,7 @@ const State = () => {
 
         const { userSending, userReceiving, mintOfTokenBeingSent } = inputValues
 
-        const applicationState = await getApplicationStatePda(new PublicKey(userSending), new PublicKey(userReceiving), new PublicKey(mintOfTokenBeingSent))
+        const applicationState = await getApplicationStatePda(new PublicKey(userSending), new PublicKey(userReceiving), new PublicKey(mintOfTokenBeingSent), new BN(Number(inputValues.id)))
         if (!applicationState) {
             alert('Error finding application state')
             return
@@ -72,6 +74,7 @@ const State = () => {
 
         if (actionType === 'pullBack') {
             transaction = await getPullBackFromEscrowTransaction({
+                id: safePayState.id,
                 connection,
                 wallet: wallet as any,
                 refundWallet: walletATA.address,
@@ -83,6 +86,7 @@ const State = () => {
             })
         } else if (actionType === 'completeGrant') {
             transaction = await getCompleteGrantTransaction({
+                id: safePayState.id,
                 connection,
                 wallet: wallet as any,
                 walletToDepositTo: walletATA.address,
@@ -111,6 +115,13 @@ const State = () => {
             </div>
             <form className='flex flex-col pr-10' onSubmit={handleSubmit}>
                 <input
+                    name='id'
+                    placeholder='unique id provided to sender'
+                    value={inputValues.id}
+                    onChange={e => setInputValues(v => ({ ...v, [e.target.name]: e.target.value }))}
+                    className='p-2 mb-2 text-zinc-300 bg-zinc-800'
+                />
+                <input
                     name='mintOfTokenBeingSent'
                     placeholder='mint'
                     value={inputValues.mintOfTokenBeingSent}
@@ -138,11 +149,7 @@ const State = () => {
             <div className='my-10 bg-zinc-800'></div>
             {safePayState && wallet && wallet.publicKey && (
                 <div>
-                    <p className='text-lg'>congrats, below is your application state</p>
-                    <p className='text-lg'>
-                        {actionType === 'pullBack' && 'now you can pull back your tokens from escrow'}
-                        {actionType === 'completeGrant' && 'now you can accept payment'}
-                    </p>
+                    <p className='text-lg'>below is your application state</p>
                     <pre>{JSON.stringify(safePayState, null, 2)}</pre>
                     <button className='mt-6 p-2 bg-gray-900 hover:bg-gray-800 font-bold text-xl' onClick={handleClick}>
                         {actionType === 'pullBack' && 'pull back from escrow'}

@@ -4,6 +4,7 @@ import { CompleteGrantParams } from '../types';
 import { getAnchorProgram } from '../utils';
 
 export const getCompleteGrantTransaction = async ({
+    id,
     connection,
     wallet,
     walletToDepositTo,
@@ -15,7 +16,7 @@ export const getCompleteGrantTransaction = async ({
 }: CompleteGrantParams) => {
     const program = getAnchorProgram(connection, wallet)
     return await program.methods
-        .completeGrant()
+        .completeGrant(id)
         .accounts({
             walletToDepositTo,
 

@@ -1,59 +1,216 @@
 {
-    "version": "0.1.0",
-    "name": "safe_pay",
-    "instructions": [
-      {
-        "name": "initiate",
-        "accounts": [
+  "version": "0.1.0",
+  "name": "safe_pay",
+  "instructions": [
+    {
+      "name": "initiate",
+      "accounts": [
+        {
+          "name": "applicationState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "escrowWalletState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userSending",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "userReceiving",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "mintOfTokenBeingSent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "walletToWithdrawFrom",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "applicationStateBump",
+          "type": "u8"
+        },
+        {
+          "name": "escrowWalletStateBump",
+          "type": "u8"
+        },
+        {
+          "name": "id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "pullBack",
+      "accounts": [
+        {
+          "name": "applicationState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "escrowWalletState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userSending",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "userReceiving",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "mintOfTokenBeingSent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "refundWallet",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "completeGrant",
+      "accounts": [
+        {
+          "name": "applicationState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "escrowWalletState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "walletToDepositTo",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userSending",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userReceiving",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "mintOfTokenBeingSent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "id",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "State",
+      "type": {
+        "kind": "struct",
+        "fields": [
           {
-            "name": "applicationState",
-            "isMut": true,
-            "isSigner": false
-          },
-          {
-            "name": "escrowWalletState",
-            "isMut": true,
-            "isSigner": false
+            "name": "id",
+            "type": "u64"
           },
           {
             "name": "userSending",
-            "isMut": true,
-            "isSigner": true
+            "type": "publicKey"
           },
           {
             "name": "userReceiving",
-            "isMut": false,
-            "isSigner": false
+            "type": "publicKey"
           },
           {
             "name": "mintOfTokenBeingSent",
-            "isMut": false,
-            "isSigner": false
+            "type": "publicKey"
           },
           {
-            "name": "walletToWithdrawFrom",
-            "isMut": true,
-            "isSigner": false
+            "name": "escrowWallet",
+            "type": "publicKey"
           },
           {
-            "name": "systemProgram",
-            "isMut": false,
-            "isSigner": false
-          },
-          {
-            "name": "tokenProgram",
-            "isMut": false,
-            "isSigner": false
-          },
-          {
-            "name": "rent",
-            "isMut": false,
-            "isSigner": false
-          }
-        ],
-        "args": [
-          {
-            "name": "amount",
+            "name": "amountTokens",
             "type": "u64"
           },
           {
@@ -65,149 +222,10 @@
             "type": "u8"
           }
         ]
-      },
-      {
-        "name": "pullBack",
-        "accounts": [
-          {
-            "name": "applicationState",
-            "isMut": true,
-            "isSigner": false
-          },
-          {
-            "name": "escrowWalletState",
-            "isMut": true,
-            "isSigner": false
-          },
-          {
-            "name": "userSending",
-            "isMut": true,
-            "isSigner": true
-          },
-          {
-            "name": "userReceiving",
-            "isMut": false,
-            "isSigner": false
-          },
-          {
-            "name": "mintOfTokenBeingSent",
-            "isMut": false,
-            "isSigner": false
-          },
-          {
-            "name": "systemProgram",
-            "isMut": false,
-            "isSigner": false
-          },
-          {
-            "name": "tokenProgram",
-            "isMut": false,
-            "isSigner": false
-          },
-          {
-            "name": "rent",
-            "isMut": false,
-            "isSigner": false
-          },
-          {
-            "name": "refundWallet",
-            "isMut": true,
-            "isSigner": false
-          }
-        ],
-        "args": []
-      },
-      {
-        "name": "completeGrant",
-        "accounts": [
-          {
-            "name": "applicationState",
-            "isMut": true,
-            "isSigner": false
-          },
-          {
-            "name": "escrowWalletState",
-            "isMut": true,
-            "isSigner": false
-          },
-          {
-            "name": "walletToDepositTo",
-            "isMut": true,
-            "isSigner": false
-          },
-          {
-            "name": "userSending",
-            "isMut": true,
-            "isSigner": false
-          },
-          {
-            "name": "userReceiving",
-            "isMut": true,
-            "isSigner": true
-          },
-          {
-            "name": "mintOfTokenBeingSent",
-            "isMut": false,
-            "isSigner": false
-          },
-          {
-            "name": "systemProgram",
-            "isMut": false,
-            "isSigner": false
-          },
-          {
-            "name": "tokenProgram",
-            "isMut": false,
-            "isSigner": false
-          },
-          {
-            "name": "rent",
-            "isMut": false,
-            "isSigner": false
-          }
-        ],
-        "args": []
       }
-    ],
-    "accounts": [
-      {
-        "name": "State",
-        "type": {
-          "kind": "struct",
-          "fields": [
-            {
-              "name": "userSending",
-              "type": "publicKey"
-            },
-            {
-              "name": "userReceiving",
-              "type": "publicKey"
-            },
-            {
-              "name": "mintOfTokenBeingSent",
-              "type": "publicKey"
-            },
-            {
-              "name": "escrowWallet",
-              "type": "publicKey"
-            },
-            {
-              "name": "amountTokens",
-              "type": "u64"
-            },
-            {
-              "name": "applicationStateBump",
-              "type": "u8"
-            },
-            {
-              "name": "escrowWalletStateBump",
-              "type": "u8"
-            }
-          ]
-        }
-      }
-    ],
-    "metadata": {
-      "address": "Fag2pgEsmMrDmGYdAE9rmyqerkVaUR8yrafGHfZzkwLb"
     }
+  ],
+  "metadata": {
+    "address": "Fag2pgEsmMrDmGYdAE9rmyqerkVaUR8yrafGHfZzkwLb"
+  }
 }

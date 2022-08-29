@@ -6,9 +6,18 @@ import { BN } from '@project-serum/anchor';
 import { getInitiatePayTransaction } from '../services/transactions/initiatePay'
 import { customGetOrCreateAssociatedTokenAccount, getPdaParams } from '../services/utils'
 
+function delay(t: number, v?: any) {
+  return new Promise(function(resolve) { 
+      setTimeout(resolve.bind(null, v), t)
+  });
+}
+
 const Home: NextPage = () => {
   const { connection } = useConnection()
   const wallet = useWallet()
+
+  const [id, setId] = useState<number | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   const [safePayState, setSafePayState] = useState<{
     amountTokens: BN,
@@ -43,7 +52,8 @@ const Home: NextPage = () => {
       alert('Error getting pda params!')
       return
     }
-    const { applicationState, applicationBump, escrowWalletState, escrowWalletBump } = pdaParams
+    const { applicationState, applicationBump, escrowWalletState, escrowWalletBump, id } = pdaParams
+    setId(id)
 
     const walletToWithdrawFromATA = await customGetOrCreateAssociatedTokenAccount(connection, wallet.publicKey, mintOfTokenBeingSent, wallet.publicKey, wallet.sendTransaction)
     if (!walletToWithdrawFromATA) {
@@ -52,6 +62,7 @@ const Home: NextPage = () => {
     }
 
     const res = await getInitiatePayTransaction({
+      id: new BN(id),
       connection,
       wallet: wallet as any,
       amount: Number(amount),
@@ -71,13 +82,17 @@ const Home: NextPage = () => {
     const { program, transaction } = res
 
     try {
-      await wallet.sendTransaction(transaction, connection, { preflightCommitment: 'confirmed' })
+      await wallet.sendTransaction(transaction, connection, { preflightCommitment: 'finalized' })
     } catch (error) {
       console.error('Error sending transaction initate pay: ', error)
     }
     
+    setIsLoading(true)
+    // this is to give time to solana blockchain
+    await delay(2000)
     const state = await program.account.state.fetch(applicationState)
     setSafePayState(state as any)
+    setIsLoading(false)
   }
 
   return (
@@ -115,13 +130,22 @@ const Home: NextPage = () => {
           onChange={e => setInputValues(v => ({ ...v, [e.target.name]: e.target.value }))}
           className='p-2 mb-6 text-zinc-300 bg-zinc-800'
         />
-        <button type='submit' className='w-24 p-2 bg-gray-900 hover:bg-gray-800 font-bold text-xl'>submit</button>
+        <div>
+          <button
+            type='submit'
+            className='p-2 bg-gray-900 hover:bg-gray-800 font-bold text-xl'
+            disabled={isLoading}
+          >
+            submit
+          </button>
+        </div>
       </form>
       <div className='my-10 bg-zinc-800'></div>
+      {isLoading && <div>loading...</div>}
       {safePayState && (
         <div>
-          <p className='text-lg'>congrats, below is your application state</p>
-          <p className='text-lg'>now we wait for your friend to accept payment</p>
+          <p className='text-lg'>below is your application state</p>
+          <p className='text-lg'>unique id (SAVE IT!): {id}</p>
           <pre>{JSON.stringify(safePayState, null, 2)}</pre>
         </div>
       )}

@@ -1,4 +1,4 @@
-import { AnchorProvider, Program, Wallet } from '@project-serum/anchor'
+import { AnchorProvider, BN, Program, Wallet } from '@project-serum/anchor'
 import { Account, ASSOCIATED_TOKEN_PROGRAM_ID, createAssociatedTokenAccountInstruction, getAccount, getAssociatedTokenAddress, TokenAccountNotFoundError, TokenInvalidAccountOwnerError, TokenInvalidMintError, TokenInvalidOwnerError, TOKEN_PROGRAM_ID } from '@solana/spl-token'
 import { SendTransactionOptions } from '@solana/wallet-adapter-base'
 import { Commitment, Connection, PublicKey, Transaction, TransactionSignature } from '@solana/web3.js'
@@ -12,10 +12,11 @@ export const getAnchorProgram = (connection: Connection, wallet: Wallet) => {
     return program
 }
 
-export const getApplicationStatePda = async (userSending: PublicKey, userReceiving: PublicKey, mint: PublicKey) => {
+export const getApplicationStatePda = async (userSending: PublicKey, userReceiving: PublicKey, mint: PublicKey, id: BN) => {
     try {
+        const idBuffer = id.toArrayLike(Buffer, 'le', 8)
         const [applicationState] = await PublicKey.findProgramAddress(
-            [Buffer.from("safe_pay_noah_state"), userSending.toBuffer(), userReceiving.toBuffer(), mint.toBuffer()], programId,
+            [Buffer.from("safe_pay_noah_state"), userSending.toBuffer(), userReceiving.toBuffer(), mint.toBuffer(), idBuffer], programId,
         )
 
         return applicationState
@@ -25,14 +26,18 @@ export const getApplicationStatePda = async (userSending: PublicKey, userReceivi
 }
 
 export const getPdaParams = async (userSending: PublicKey, userReceiving: PublicKey, mint: PublicKey) => {
+    const id = parseInt((Date.now() / 1000).toString())
+    const idBN = new BN(id)
+    const idBuffer = idBN.toArrayLike(Buffer, 'le', 8)
     try {
         const [applicationState, applicationBump] = await PublicKey.findProgramAddress(
-            [Buffer.from("safe_pay_noah_state"), userSending.toBuffer(), userReceiving.toBuffer(), mint.toBuffer()], programId,
+            [Buffer.from("safe_pay_noah_state"), userSending.toBuffer(), userReceiving.toBuffer(), mint.toBuffer(), idBuffer], programId,
         );
         const [escrowWalletState, escrowWalletBump] = await PublicKey.findProgramAddress(
-            [Buffer.from("safe_pay_noah_wallet"), userSending.toBuffer(), userReceiving.toBuffer(), mint.toBuffer()], programId,
+            [Buffer.from("safe_pay_noah_wallet"), userSending.toBuffer(), userReceiving.toBuffer(), mint.toBuffer(), idBuffer], programId,
         );
         return {
+            id,
             escrowWalletState,
             escrowWalletBump,
             applicationState,

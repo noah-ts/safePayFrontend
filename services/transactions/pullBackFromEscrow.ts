@@ -4,6 +4,7 @@ import { PullBackFromEscrowParams } from '../types';
 import { getAnchorProgram } from '../utils';
 
 export const getPullBackFromEscrowTransaction = async ({
+    id,
     connection,
     wallet,
     refundWallet,
@@ -15,7 +16,7 @@ export const getPullBackFromEscrowTransaction = async ({
 }: PullBackFromEscrowParams) => {
     const program = getAnchorProgram(connection, wallet)
     return await program.methods
-        .pullBack()
+        .pullBack(id)
         .accounts({
             refundWallet,
 
