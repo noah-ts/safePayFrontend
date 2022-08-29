@@ -33,10 +33,10 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
             <WalletProvider wallets={wallets} autoConnect>
                 <WalletModalProvider>
                   <div className='bg-zinc-900 text-zinc-300 h-screen'>
-                    <div className='flex justify-between bg-gray-900 mb-10'>
+                    <div className='flex justify-between bg-gray-900 mb-10 pl-10 lg:pl-52'>
                         <div className='flex justify-start items-center'>
                             <Link href='/'>
-                                <a className='ml-10 lg:ml-52 mr-10 hover:underline'>initiate pay</a>
+                                <a className='mr-10 hover:underline'>initiate pay</a>
                             </Link>
                             <Link href='/state'>
                                 <a className='hover:underline'>pull back or accept payment</a>
@@ -47,7 +47,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
                             <WalletDisconnectButton />
                         </div>
                     </div>
-                    <div className='ml-10 lg:ml-52'>
+                    <div className='pl-10 lg:pl-52'>
                         <Component {...pageProps} />
                     </div>
                   </div>

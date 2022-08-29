@@ -95,12 +95,43 @@ const Home: NextPage = () => {
     setIsLoading(false)
   }
 
+  const info = (
+    <div className='pr-4'>
+      <div>this program is on devnet</div>
+      <div>
+          built by {' '}
+          <a
+              href='https://twitter.com/noahhh_ts'
+              className='hover:underline'
+              target='_blank'
+              rel='noreferrer'
+          >
+              noah
+          </a>
+      </div>
+      <div>
+          heavily borrowed from this {' '}
+          <a
+              href='https://betterprogramming.pub/using-pdas-and-spl-token-in-anchor-and-solana-df05c57ccd04'
+              className='hover:underline'
+              target='_blank'
+              rel='noreferrer'
+          >
+              blog
+          </a>
+      </div>
+    </div>
+  )
+
   return (
     <>
       <div className='mb-6'>
-        <div className='mb-6'>
-          <h1 className='text-3xl font-bold'>safe pay solana program</h1>
-          <h2 className='text-xl'>send tokens to a friend safely</h2>
+        <div className='flex justify-between'>
+          <div className='mb-6'>
+            <h1 className='text-3xl font-bold'>safe pay solana program</h1>
+            <h2 className='text-xl'>send tokens to a friend safely</h2>
+          </div>
+          {info}
         </div>
         <ol className='list-decimal'>
           <li>send tokens to escrow wallet</li>
